@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($tasks as &$task) {
             $task['created_at'] = $createdAt;
+            $task['is_archived'] = 0;
         }
         unset($task);
 
@@ -35,6 +36,7 @@ class DatabaseSeeder extends Seeder
             'username'   => 'demo.user',
             'full_name'  => 'Vincent Luke Elpedez',
             'email'      => 'elpedezvincent@gmail.com',
+            'password'   => password_hash('Password123!', PASSWORD_DEFAULT),
             'created_at' => $createdAt,
         ]);
     }

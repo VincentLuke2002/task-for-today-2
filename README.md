@@ -1,6 +1,6 @@
-# Tasks for Today Management System
+# Tasks for Today Management System TSA2
 
-A CodeIgniter 4 task-management application created for IT0049 Web System Technologies. It includes a date-filtered dashboard, persistent task-completion controls, a complete task list, a database-backed profile, and a static developer page.
+A CodeIgniter 4 task-management application with public read-only pages and authenticated task management. TSA2 adds full CRUD, form validation, session authentication, and soft deletion to the original project.
 
 ## Requirements
 
@@ -13,33 +13,16 @@ A CodeIgniter 4 task-management application created for IT0049 Web System Techno
 1. Clone or extract the project.
 2. Run `composer install`.
 3. Copy `env` to `.env`.
-4. Set `CI_ENVIRONMENT = development` in `.env`.
-5. Create a MySQL database named `tasks_for_today`.
-6. Update the database values in `.env`:
-
-```ini
-database.default.hostname = localhost
-database.default.database = tasks_for_today
-database.default.username = root
-database.default.password =
-database.default.DBDriver = MySQLi
-database.default.port = 3306
-```
-
-7. Set your name for the About page:
-
-```ini
-app.developerName = "Vincent Luke Elpedez"
-```
-
-8. Create and populate the tables:
+4. Create a MySQL database named `tasks_for_today_2`.
+5. Check the database settings in `.env`.
+6. Create and populate the tables:
 
 ```bash
 php spark migrate
 php spark db:seed DatabaseSeeder
 ```
 
-9. Start the development server:
+7. Start the development server:
 
 ```bash
 php spark serve
@@ -47,28 +30,45 @@ php spark serve
 
 Open `http://localhost:8080`.
 
-## Required pages
+## Demo login
+
+- Username: `demo.user`
+- Password: `Password123!`
+
+The password is stored as a secure hash produced by `password_hash()` and checked during login with `password_verify()`.
+
+## Public pages
 
 | Route | Purpose |
 |---|---|
-| `/` | Displays only tasks where `task_date` is today |
-| `/tasks` | Displays every task, grouped and ordered by date |
-| `/profile` | Displays the single demo user record |
+| `/` | Displays active tasks scheduled for today |
+| `/tasks` | Displays all active tasks grouped by date |
+| `/profile` | Displays the demo user profile |
 | `/about` | Identifies the developer and explains the project |
+| `/login` | Accepts the demo username and password |
 
-Tasks can be marked complete or reopened from both the Today and Task List pages. Each change is saved to the database immediately.
+## Protected task actions
+
+| Route | Purpose |
+|---|---|
+| `/tasks/new` | Create a task with validated title and date fields |
+| `/tasks/{id}/edit` | Edit an existing active task |
+| `/tasks/{id}/toggle` | Complete or reopen a task |
+| `/tasks/{id}/delete` | Soft-delete a task by setting `is_archived` to `1` |
+| `/logout` | Destroy the authenticated session |
+
+Logged-out visitors are redirected to `/login` when they request a protected action. Archived tasks remain in the database but are excluded from the Today and Task List pages.
 
 ## Database options
 
-The recommended setup uses the migrations and `DatabaseSeeder`. A MySQL export is also included at `database/tasks_for_today.sql`. Both seed paths create ten tasks across five dates and exactly one user record. Dates are generated relative to the day the data is inserted, so the dashboard always receives current-day records.
+The recommended setup uses the migrations and `DatabaseSeeder`. A MySQL export is also included at `database/tasks_for_today.sql`. Both options create ten sample tasks and one demo user.
 
 ## Project structure
 
-- `app/Controllers` contains the four page controllers.
+- `app/Controllers/Auth.php` handles login and logout.
+- `app/Filters/AuthFilter.php` protects task management routes.
+- `app/Controllers/Tasks.php` handles task listing, creation, editing, status changes, and archiving.
 - `app/Models` contains `TaskModel` and `UserModel`.
-- `app/Views` contains the shared layout and page views.
-- `app/Database/Migrations` defines the assignment schema.
-- `app/Database/Seeds/DatabaseSeeder.php` provides sample records.
-- `public/assets` contains the original responsive interface.
-
-
+- `app/Database/Migrations` defines the original schema and TSA2 fields.
+- `app/Database/Seeds/DatabaseSeeder.php` creates sample data and the hashed demo password.
+- `public/assets` contains the responsive interface.

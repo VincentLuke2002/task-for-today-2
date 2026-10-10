@@ -34,7 +34,7 @@ app.developerName = 'Vincent Luke Elpedez'
 #--------------------------------------------------------------------
 
 database.default.hostname = localhost
-database.default.database = tasks_for_today
+database.default.database = tasks_for_today_2
 database.default.username = root
 database.default.password =
 database.default.DBDriver = MySQLi

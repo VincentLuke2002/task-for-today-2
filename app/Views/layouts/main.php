@@ -24,12 +24,26 @@
                 <a class="<?= $active === 'tasks' ? 'is-active' : '' ?>" href="<?= site_url('tasks') ?>">Task list</a>
                 <a class="<?= $active === 'profile' ? 'is-active' : '' ?>" href="<?= site_url('profile') ?>">Profile</a>
                 <a class="<?= $active === 'about' ? 'is-active' : '' ?>" href="<?= site_url('about') ?>">About</a>
+                <?php if (session()->get('isLoggedIn')): ?>
+                    <span class="nav-account">
+                        <span><?= esc(session('fullName')) ?></span>
+                        <form action="<?= site_url('logout') ?>" method="post">
+                            <?= csrf_field() ?>
+                            <button type="submit">Log out</button>
+                        </form>
+                    </span>
+                <?php else: ?>
+                    <a class="<?= $active === 'login' ? 'is-active' : '' ?>" href="<?= site_url('login') ?>">Login</a>
+                <?php endif ?>
             </nav>
         </header>
 
         <main>
             <?php if ($message = session()->getFlashdata('message')): ?>
                 <div class="flash-message" role="status"><?= esc($message) ?></div>
+            <?php endif ?>
+            <?php if ($message = session()->getFlashdata('error')): ?>
+                <div class="flash-message flash-error" role="alert"><?= esc($message) ?></div>
             <?php endif ?>
             <?= $this->renderSection('content') ?>
         </main>

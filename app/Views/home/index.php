@@ -28,7 +28,10 @@ $completion = $counts['all'] > 0 ? (int) round(($counts['completed'] / $counts['
 <section class="task-section">
     <div class="section-heading">
         <div><p class="eyebrow">Today’s queue</p><h2>One clear list</h2></div>
-        <a class="text-link" href="<?= site_url('tasks') ?>">See every date <span aria-hidden="true">→</span></a>
+        <div class="heading-actions">
+            <?php if (session()->get('isLoggedIn')): ?><a class="button button-primary" href="<?= site_url('tasks/new') ?>">New task</a><?php endif ?>
+            <a class="text-link" href="<?= site_url('tasks') ?>">See every date <span aria-hidden="true">→</span></a>
+        </div>
     </div>
 
     <?php if ($tasks === []): ?>
@@ -38,13 +41,17 @@ $completion = $counts['all'] > 0 ? (int) round(($counts['completed'] / $counts['
             <?php foreach ($tasks as $index => $task): ?>
                 <?php $isCompleted = $task['status'] === 'completed'; ?>
                 <article class="task-card <?= $isCompleted ? 'is-completed' : '' ?>">
-                    <form class="task-check-form" method="post" action="<?= site_url('tasks/' . $task['id'] . '/toggle') ?>">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="return_to" value="today">
-                        <button class="task-check <?= $isCompleted ? 'is-checked' : '' ?>" type="submit" aria-label="<?= $isCompleted ? 'Reopen' : 'Complete' ?> <?= esc($task['title']) ?>" aria-pressed="<?= $isCompleted ? 'true' : 'false' ?>">
-                            <span class="sr-only"><?= $isCompleted ? 'Completed' : 'Not completed' ?></span>
-                        </button>
-                    </form>
+                    <?php if (session()->get('isLoggedIn')): ?>
+                        <form class="task-check-form" method="post" action="<?= site_url('tasks/' . $task['id'] . '/toggle') ?>">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="return_to" value="today">
+                            <button class="task-check <?= $isCompleted ? 'is-checked' : '' ?>" type="submit" aria-label="<?= $isCompleted ? 'Reopen' : 'Complete' ?> <?= esc($task['title']) ?>" aria-pressed="<?= $isCompleted ? 'true' : 'false' ?>">
+                                <span class="sr-only"><?= $isCompleted ? 'Completed' : 'Not completed' ?></span>
+                            </button>
+                        </form>
+                    <?php else: ?>
+                        <span class="task-check static-check <?= $isCompleted ? 'is-checked' : '' ?>" aria-hidden="true"></span>
+                    <?php endif ?>
                     <span class="task-number"><?= esc(str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT)) ?></span>
                     <div class="task-copy"><h3><?= esc($task['title']) ?></h3><p>Scheduled for <?= esc($date->format('F j, Y')) ?></p></div>
                     <span class="status status-<?= esc(str_replace('_', '-', $task['status'])) ?>"><?= esc(ucwords(str_replace('_', ' ', $task['status']))) ?></span>
